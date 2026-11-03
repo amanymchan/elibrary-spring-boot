@@ -6,7 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -18,20 +17,28 @@ public class BookController {
     }
 
     @GetMapping("/")
-    public String catalog(@RequestParam(defaultValue = "") String q,
-                          @RequestParam(defaultValue = "all") String filter,
-                          @RequestParam(defaultValue = "title") String sort,
-                          Model model) {
-        String normalizedFilter = List.of("all", "available", "digital").contains(filter) ? filter : "all";
-        String normalizedSort = List.of("title", "author").contains(sort) ? sort : "title";
-        List<Book> books = bookService.filterAndSort(q, normalizedFilter, normalizedSort);
+    public String home() {
+        return "redirect:/book";
+    }
 
+    @GetMapping("/book")
+    public String books(Model model) {
+        List<Book> books = bookService.findAll();
         model.addAttribute("books", books);
-        model.addAttribute("query", q);
-        model.addAttribute("filter", normalizedFilter);
-        model.addAttribute("sort", normalizedSort);
         model.addAttribute("count", books.size());
-        return "catalog";
+        return "books";
+    }
+
+    @GetMapping("/borrowed-books")
+    public String borrowedBooks(Model model) {
+        model.addAttribute("borrowRecords", bookService.findBorrowedBooks());
+        return "borrowed-books";
+    }
+
+    @GetMapping("/digital")
+    public String digitalBooks(Model model) {
+        model.addAttribute("books", bookService.findDigitalBooks());
+        return "digital";
     }
 
     @PostMapping("/books/{id}/borrow")
@@ -42,7 +49,7 @@ public class BookController {
         } catch (BookUnavailableException | BookNotFoundException ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
-        return "redirect:/";
+        return "redirect:/book";
     }
 
     @PostMapping("/books/{id}/return")
@@ -53,14 +60,6 @@ public class BookController {
         } catch (BookUnavailableException | BookNotFoundException ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
-        return "redirect:/";
-    }
-
-    @GetMapping("/books/{id}/digital")
-    public String readDigital(@PathVariable long id, Model model) {
-        Book book = bookService.findById(id);
-        model.addAttribute("book", book);
-        model.addAttribute("content", bookService.digitalContent(id));
-        return "reader";
+        return "redirect:/borrowed-books";
     }
 }

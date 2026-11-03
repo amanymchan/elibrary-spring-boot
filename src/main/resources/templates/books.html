@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Books — Open Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" th:href="@{/book}"><span class="brand-mark">O</span><span>open shelf</span></a>
+    <nav aria-label="Main navigation"><a class="active" th:href="@{/book}">Books</a><a th:href="@{/borrowed-books}">Borrowed books</a><a th:href="@{/digital}">Digital</a></nav>
+    <a class="account" href="#catalog"><span>Guest reader</span><span class="avatar">G</span></a>
+  </header>
+  <main>
+    <section class="hero"><div class="hero-copy"><span class="eyebrow">YOUR NEIGHBORHOOD LIBRARY, ONLINE</span><h1>A good book<br>opens <em>everything.</em></h1><p>Browse the collection and borrow your next favorite.</p></div><div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="book-stack"><div class="book-cover cover-one"><small>THE</small><strong>SECRET<br>GARDEN</strong><i>F. H. BURNETT</i></div><div class="book-cover cover-two"><small>JANE AUSTEN</small><strong>PRIDE &<br>PREJUDICE</strong><i>A NOVEL</i></div><div class="plant">✳</div></div></div></section>
+    <section class="catalog" id="catalog"><div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2>All books</h2></div><span class="result-count" th:text="|${count} books|">0 books</span></div>
+      <div th:if="${notice}" class="message" role="status" th:text="${notice}"></div><div th:if="${error}" class="message error-message" role="alert" th:text="${error}"></div>
+      <div class="book-grid" th:if="${!books.isEmpty()}"><article class="book-card" th:each="book : ${books}">
+        <div class="book-visual" th:classappend="| palette-${(book.id - 1) % 5}|"><span class="visual-category" th:text="${book.category.name}">Category</span><span class="visual-title" th:text="${book.title}">Title</span><span class="visual-author" th:text="${book.author}">Author</span><span th:if="${book.digital}" class="digital-stamp">E-BOOK</span></div>
+        <div class="book-info"><div class="book-title-row"><div><h3 th:text="${book.title}">Title</h3><p class="author" th:text="${book.author}">Author</p></div><span class="availability" th:classappend="${book.available ? ' in-stock' : ' checked-out'}" th:title="${book.available ? 'Available' : 'Borrowed'}"></span></div>
+          <p class="description" th:text="${book.description}">Description</p><div class="book-actions"><form th:if="${book.available}" th:action="@{/books/{id}/borrow(id=${book.id})}" method="post"><button class="primary-button" type="submit">Borrow book</button></form><span th:unless="${book.available}" class="print-label">CURRENTLY BORROWED</span><a th:if="${book.digital}" class="read-button" th:href="@{/digital}">View digital <span>↗</span></a><span th:unless="${book.digital}" class="print-label">PRINT EDITION</span></div>
+        </div>
+      </article></div>
+      <div th:if="${books.isEmpty()}" class="empty-state"><h3>No books in the catalog</h3></div>
+    </section>
+    <section class="quote"><span>“</span><p>A library is not a luxury but one of the necessities of life.</p><small>— HENRY WARD BEECHER</small></section>
+  </main>
+  <footer><a class="brand" th:href="@{/book}"><span class="brand-mark">O</span><span>open shelf</span></a><span>Made for curious minds.</span><span>© 2025 Open Shelf Library</span></footer>
+</body>
+</html>

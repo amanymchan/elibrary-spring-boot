@@ -23,14 +23,25 @@ public class BookService {
         seedData();
     }
 
+    @Transactional(readOnly = true)
     public List<Book> findAll() {
         return bookRepository.findAll();
     }
 
-    public Book findById(long id) {
-        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+    @Transactional(readOnly = true)
+    public List<Book> findDigitalBooks() {
+        return bookRepository.findAll().stream().filter(Book::isDigital)
+                .sorted((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle())).toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<BorrowRecord> findBorrowedBooks() {
+        User user = findDemoUser();
+        return borrowRecordRepository.findByUserIdAndStatusOrderByBorrowedOnDesc(
+                user.getId(), BorrowRecord.Status.BORROWED);
+    }
+
+    @Transactional(readOnly = true)
     public List<Book> filterAndSort(String query, String filter, String sort) {
         String normalizedQuery = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
         String normalizedFilter = switch (filter) {
@@ -57,8 +68,7 @@ public class BookService {
         if (!book.isAvailable()) {
             throw new BookUnavailableException("This book is already borrowed.");
         }
-        User user = userRepository.findByEmail(DEMO_USER_EMAIL)
-                .orElseThrow(() -> new IllegalStateException("Demo library user is missing."));
+        User user = findDemoUser();
         var today = java.time.LocalDate.now();
         borrowRecordRepository.save(new BorrowRecord(book, user, today, today.plusDays(14)));
         book.setAvailable(false);
@@ -80,12 +90,23 @@ public class BookService {
         return bookRepository.save(book);
     }
 
+    @Transactional(readOnly = true)
     public String digitalContent(long id) {
         Book book = findById(id);
         if (!book.isDigital() || book.getDigitalContent() == null) {
             throw new BookUnavailableException("Digital content is not available for this title.");
         }
         return book.getDigitalContent();
+    }
+
+    @Transactional(readOnly = true)
+    public Book findById(long id) {
+        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+    }
+
+    private User findDemoUser() {
+        return userRepository.findByEmail(DEMO_USER_EMAIL)
+                .orElseThrow(() -> new IllegalStateException("Demo library user is missing."));
     }
 
     private boolean containsText(Book book, String query) {
@@ -97,7 +118,7 @@ public class BookService {
     }
 
     private void seedData() {
-        User demoUser = userRepository.findByEmail(DEMO_USER_EMAIL)
+        userRepository.findByEmail(DEMO_USER_EMAIL)
                 .orElseGet(() -> userRepository.save(new User("Guest Reader", DEMO_USER_EMAIL)));
 
         if (bookRepository.count() > 0) {
