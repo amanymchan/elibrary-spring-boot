@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Borrowed Books — Open Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/styles.css}"><link rel="stylesheet" th:href="@{/pages.css}">
+</head>
+<body>
+  <header class="topbar"><a class="brand" th:href="@{/book}"><span class="brand-mark">O</span><span>open shelf</span></a><nav aria-label="Main navigation"><a th:href="@{/book}">Books</a><a class="active" th:href="@{/borrowed-books}">Borrowed books</a><a th:href="@{/digital}">Digital</a></nav><a class="account" href="#borrowed"><span>Guest reader</span><span class="avatar">G</span></a></header>
+  <main><section class="catalog borrowed-page" id="borrowed"><div class="section-heading"><div><span class="eyebrow">YOUR READING LIST</span><h2>Borrowed books</h2></div><span class="result-count" th:text="|${borrowRecords.size()} ${borrowRecords.size() == 1 ? 'book' : 'books'}|">0 books</span></div>
+    <div th:if="${notice}" class="message" role="status" th:text="${notice}"></div><div th:if="${error}" class="message error-message" role="alert" th:text="${error}"></div>
+    <div class="book-grid" th:if="${!borrowRecords.isEmpty()}"><article class="book-card borrowed-card" th:each="record : ${borrowRecords}"><div class="book-visual" th:classappend="| palette-${(record.book.id - 1) % 5}|"><span class="visual-category" th:text="${record.book.category.name}">Category</span><span class="visual-title" th:text="${record.book.title}">Title</span><span class="visual-author" th:text="${record.book.author}">Author</span></div>
+      <div class="book-info"><h3 th:text="${record.book.title}">Title</h3><p class="author" th:text="${record.book.author}">Author</p><p class="loan-details">Borrowed <time th:text="${record.borrowedOn}">date</time> · Due <time th:text="${record.dueOn}">date</time></p><form th:action="@{/books/{id}/return(id=${record.book.id})}" method="post"><button class="secondary-button" type="submit">Return book</button></form></div>
+    </article></div>
+    <div th:if="${borrowRecords.isEmpty()}" class="empty-state"><span>▤</span><h3>No borrowed books</h3><p>Books you borrow will appear here.</p><a class="primary-button link-button" th:href="@{/book}">Browse books</a></div>
+  </section></main>
+  <footer><a class="brand" th:href="@{/book}"><span class="brand-mark">O</span><span>open shelf</span></a><span>Made for curious minds.</span><span>© 2025 Open Shelf Library</span></footer>
+</body>
+</html>

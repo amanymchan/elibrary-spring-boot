@@ -1,0 +1,14 @@
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/ElibraryApplication.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/config/DemoDataInitializer.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/controller/BookController.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/exception/BookNotFoundException.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/exception/BookUnavailableException.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/model/Book.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/model/BorrowRecord.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/model/Category.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/model/User.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/repository/BookRepository.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/repository/BorrowRecordRepository.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/repository/CategoryRepository.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/repository/UserRepository.java
+/workspaces/elibrary-spring-boot/src/main/java/com/elibrary/service/BookService.java

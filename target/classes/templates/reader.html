@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="|${book.title} — Open Shelf Reader|">Open Shelf Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/styles.css}"><link rel="stylesheet" th:href="@{/pages.css}">
+</head>
+<body>
+  <header class="topbar"><a class="brand" th:href="@{/book}"><span class="brand-mark">O</span><span>open shelf</span></a><a class="read-button" th:href="@{/digital}">← Back to digital library</a></header>
+  <main class="reader-page"><article class="reader-panel"><span class="eyebrow">DIGITAL READER · PREVIEW</span><h1 th:text="${book.title}">Book title</h1><p class="author" th:text="${book.author}">Author</p><hr><pre class="reader-text" th:text="${content}">Digital preview</pre><p class="reader-note">Digital preview for demonstration purposes.</p></article></main>
+  <footer><a class="brand" th:href="@{/book}"><span class="brand-mark">O</span><span>open shelf</span></a><span>Made for curious minds.</span><span>© 2025 Open Shelf Library</span></footer>
+</body>
+</html>

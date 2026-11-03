@@ -2,7 +2,9 @@ package com.elibrary;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -43,5 +45,22 @@ class ElibraryApplicationTests {
         mockMvc.perform(get("/book").param("q", "jane").param("filter", "digital"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Pride and Prejudice")));
+    }
+
+    @Test
+    void borrowRedirectUsesTheForwardedBrowserHost() throws Exception {
+        mockMvc.perform(post("/books/1/borrow")
+                        .header("X-Forwarded-Host", "library.example")
+                        .header("X-Forwarded-Proto", "https")
+                        .header("X-Forwarded-Port", "443"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("https://library.example/book"));
+
+        mockMvc.perform(post("/books/1/return")
+                        .header("X-Forwarded-Host", "library.example")
+                        .header("X-Forwarded-Proto", "https")
+                        .header("X-Forwarded-Port", "443"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("https://library.example/borrowed-books"));
     }
 }
