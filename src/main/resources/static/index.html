@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f4ee">
+  <title>Open Shelf — eLibrary</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">O</span><span>open shelf</span></a>
+    <nav aria-label="Main navigation"><a class="active" href="#catalog">Discover</a><a href="#catalog" id="digital-nav">Digital library</a></nav>
+    <a class="account" href="#catalog" aria-label="Your library account"><span>Guest reader</span><span class="avatar">G</span></a>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="hero-copy"><span class="eyebrow">YOUR NEIGHBORHOOD LIBRARY, ONLINE</span><h1>A good book<br>opens <em>everything.</em></h1><p>Find your next favorite, borrow a story, or settle into a digital read.</p>
+        <form class="search" id="search-form"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search titles, authors, or topics" aria-label="Search titles, authors, or topics"><button type="submit">Search</button></form>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="book-stack"><div class="book-cover cover-one"><small>THE</small><strong>SECRET<br>GARDEN</strong><i>F. H. BURNETT</i></div><div class="book-cover cover-two"><small>JANE AUSTEN</small><strong>PRIDE &<br>PREJUDICE</strong><i>A NOVEL</i></div><div class="plant">✳</div></div></div>
+    </section>
+    <section class="catalog" id="catalog">
+      <div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2>Find your next read</h2></div><span id="result-count" class="result-count"></span></div>
+      <div class="toolbar"><div class="filters" role="group" aria-label="Filter books"><button class="filter active" data-filter="all">All books</button><button class="filter" data-filter="available">Available</button><button class="filter" data-filter="digital">Digital</button></div><label class="sort-label">Sort by <select id="sort-select"><option value="title">Title</option><option value="author">Author</option></select></label></div>
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+      <div id="book-grid" class="book-grid" aria-live="polite"></div>
+    </section>
+    <section class="quote"><span>“</span><p>A library is not a luxury but one of the necessities of life.</p><small>— HENRY WARD BEECHER</small></section>
+  </main>
+  <footer><a class="brand" href="#"><span class="brand-mark">O</span><span>open shelf</span></a><span>Made for curious minds.</span><span>© 2025 Open Shelf Library</span></footer>
+  <dialog id="reader-dialog"><div class="reader-header"><span class="eyebrow">DIGITAL READER</span><button id="close-reader" class="close-button" aria-label="Close reader">×</button></div><h2 id="reader-title"></h2><pre id="reader-content"></pre><p class="reader-note">Digital preview for demonstration purposes.</p></dialog>
+  <script src="/app.js"></script>
+</body>
+</html>
