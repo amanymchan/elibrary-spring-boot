@@ -4,7 +4,6 @@ import com.elibrary.exception.BookNotFoundException;
 import com.elibrary.exception.BookUnavailableException;
 import com.elibrary.model.Book;
 import com.elibrary.model.BorrowRecord;
-import com.elibrary.model.Category;
 import com.elibrary.model.User;
 import com.elibrary.repository.BookRepository;
 import com.elibrary.repository.BorrowRecordRepository;
@@ -82,7 +81,7 @@ public class BookService {
     @Transactional(readOnly = true)
     public String digitalContent(long id) {
         Book book = findById(id);
-        if (!book.isDigital() || book.getDigitalContent() == null) {
+        if (!book.isDigital() || book.getDigitalContent() == null || book.getDigitalContent().isBlank()) {
             throw new BookUnavailableException("Digital content is not available for this title.");
         }
         return book.getDigitalContent();

@@ -50,15 +50,13 @@ public class BookController {
     @GetMapping("/digital")
     public String digitalBooks(
             @RequestParam(value = "q", required = false) String query,
-            @RequestParam(value = "filter", defaultValue = "digital") String filter,
             @RequestParam(value = "sort", defaultValue = "title") String sort,
             Model model) {
-        List<Book> books = bookService.filterAndSort(query, filter, sort);
+        List<Book> books = bookService.filterAndSort(query, "digital", sort);
         model.addAttribute("books", books);
         model.addAttribute("count", books.size());
         model.addAttribute("query", query == null ? "" : query);
-        model.addAttribute("filter", filter);
-        model.addAttribute("sort", sort);
+        model.addAttribute("sort", "author".equals(sort) ? "author" : "title");
         return "digital";
     }
 
@@ -66,9 +64,6 @@ public class BookController {
     public String digitalPreview(@PathVariable long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             Book book = bookService.findById(id);
-            if (!book.isDigital()) {
-                throw new BookUnavailableException("Digital content is not available for this title.");
-            }
             model.addAttribute("book", book);
             model.addAttribute("content", bookService.digitalContent(id));
             return "reader";

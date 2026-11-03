@@ -5,14 +5,17 @@
   <title>Digital Library — Open Shelf</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/styles.css}">
+  <link rel="stylesheet" th:href="@{/styles.css}"><link rel="stylesheet" th:href="@{/pages.css}">
 </head>
 <body>
   <header class="topbar"><a class="brand" th:href="@{/book}"><span class="brand-mark">O</span><span>open shelf</span></a><nav aria-label="Main navigation"><a th:href="@{/book}">Books</a><a th:href="@{/borrowed-books}">Borrowed books</a><a class="active" th:href="@{/digital}">Digital</a></nav><a class="account" href="#digital-books"><span>Guest reader</span><span class="avatar">G</span></a></header>
-  <main><section class="catalog digital-page" id="digital-books"><div class="section-heading"><div><span class="eyebrow">READ ANYWHERE</span><h2>Digital library</h2></div><span class="result-count" th:text="|${books.size()} digital books|">0 digital books</span></div>
-    <p class="page-intro">Browse the digital titles and read their available previews below.</p>
-    <div class="digital-list" th:if="${!books.isEmpty()}"><article class="digital-card" th:each="book : ${books}"><div class="digital-card-heading"><div><span class="eyebrow" th:text="${book.category.name}">Category</span><h3 th:text="${book.title}">Title</h3><p class="author" th:text="${book.author}">Author</p></div><span class="digital-stamp dark-stamp">E-BOOK</span></div><p class="description" th:text="${book.description}">Description</p><pre class="digital-content" th:text="${book.digitalContent}">Digital preview</pre></article></div>
-    <div th:if="${books.isEmpty()}" class="empty-state"><h3>No digital content available</h3><p>Check back later for digital titles.</p></div>
+  <main><section class="catalog digital-page" id="digital-books">
+    <div class="section-heading"><div><span class="eyebrow">READ ANYWHERE</span><h2>Digital library</h2></div><span class="result-count" th:text="|${count} ${count == 1 ? 'title' : 'titles'}|">0 titles</span></div>
+    <form class="search digital-search" th:action="@{/digital}" method="get"><span aria-hidden="true">⌕</span><input name="q" type="search" th:value="${query}" placeholder="Search digital titles" aria-label="Search digital titles"><input type="hidden" name="sort" th:value="${sort}"><button type="submit">Search</button></form>
+    <p class="page-intro">Browse digital titles and read their available previews below.</p>
+    <div th:if="${error}" class="message error-message" role="alert" th:text="${error}"></div>
+    <div class="digital-list" th:if="${!books.isEmpty()}"><article class="digital-card" th:each="book : ${books}"><div class="digital-card-heading"><div><span class="eyebrow" th:text="${book.category.name}">Category</span><h3 th:text="${book.title}">Book title</h3><p class="author" th:text="${book.author}">Author</p></div><a class="read-button" th:href="@{/books/{id}/digital(id=${book.id})}">Read preview <span>↗</span></a></div><p class="description" th:text="${book.description}">Description</p></article></div>
+    <div th:if="${books.isEmpty()}" class="empty-state"><h3>No digital content available</h3><p>Try another search or check back later.</p><a class="primary-button link-button" th:href="@{/book}">Browse all books</a></div>
   </section></main>
   <footer><a class="brand" th:href="@{/book}"><span class="brand-mark">O</span><span>open shelf</span></a><span>Made for curious minds.</span><span>© 2025 Open Shelf Library</span></footer>
 </body>
