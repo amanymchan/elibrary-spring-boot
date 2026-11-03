@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -26,10 +27,17 @@ public class BookController {
     }
 
     @GetMapping("/book")
-    public String books(Model model) {
-        List<Book> books = bookService.findAll();
+    public String books(
+            @RequestParam(value = "q", required = false) String query,
+            @RequestParam(value = "filter", defaultValue = "all") String filter,
+            @RequestParam(value = "sort", defaultValue = "title") String sort,
+            Model model) {
+        List<Book> books = bookService.filterAndSort(query, filter, sort);
         model.addAttribute("books", books);
         model.addAttribute("count", books.size());
+        model.addAttribute("query", query == null ? "" : query);
+        model.addAttribute("filter", filter);
+        model.addAttribute("sort", sort);
         return "books";
     }
 
@@ -40,9 +48,34 @@ public class BookController {
     }
 
     @GetMapping("/digital")
-    public String digitalBooks(Model model) {
-        model.addAttribute("books", bookService.findDigitalBooks());
+    public String digitalBooks(
+            @RequestParam(value = "q", required = false) String query,
+            @RequestParam(value = "filter", defaultValue = "digital") String filter,
+            @RequestParam(value = "sort", defaultValue = "title") String sort,
+            Model model) {
+        List<Book> books = bookService.filterAndSort(query, filter, sort);
+        model.addAttribute("books", books);
+        model.addAttribute("count", books.size());
+        model.addAttribute("query", query == null ? "" : query);
+        model.addAttribute("filter", filter);
+        model.addAttribute("sort", sort);
         return "digital";
+    }
+
+    @GetMapping("/books/{id}/digital")
+    public String digitalPreview(@PathVariable long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Book book = bookService.findById(id);
+            if (!book.isDigital()) {
+                throw new BookUnavailableException("Digital content is not available for this title.");
+            }
+            model.addAttribute("book", book);
+            model.addAttribute("content", bookService.digitalContent(id));
+            return "reader";
+        } catch (BookNotFoundException | BookUnavailableException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/digital";
+        }
     }
 
     @PostMapping("/books/{id}/borrow")
