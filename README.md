@@ -1,10 +1,19 @@
 # Open Shelf eLibrary
 
-A Spring Boot eLibrary application using Spring MVC and Thymeleaf server-rendered views. Browse and search the catalog, borrow and return titles, and open digital previews.
+A Spring Boot eLibrary application built with Spring MVC, Thymeleaf, and JPA. The app includes a server-rendered catalog, search/filter/sort controls, borrow/return actions, and digital content previews.
+
+## Architecture
+
+- Controller: `BookController` in `com.elibrary.book`
+- Data model: `Book` entity mapped to the `books` table via JPA annotations
+- Service layer: `BookService`
+- Repository: `BookRepository` extending `JpaRepository`
+- Views: Thymeleaf templates in `src/main/resources/templates`
+- Database: H2 in-memory database configured in `application.properties`
 
 ## Requirements
 
-- Java 17 or newer
+- Java 17+
 - Maven 3.6+
 
 ## Run locally
@@ -13,19 +22,10 @@ A Spring Boot eLibrary application using Spring MVC and Thymeleaf server-rendere
 mvn spring-boot:run
 ```
 
-Open [http://localhost:8080](http://localhost:8080).
+Open: http://localhost:8080
 
-## MVC routes
-
-| Method | Route | Purpose |
-| --- | --- | --- |
-| `GET` | `/` | Browse, search, filter, and sort the catalog |
-| `POST` | `/books/{id}/borrow` | Borrow an available book, then redirect to the catalog |
-| `POST` | `/books/{id}/return` | Return a borrowed book, then redirect to the catalog |
-| `GET` | `/books/{id}/digital` | Read a digital preview |
-
-Views are Thymeleaf templates under `src/main/resources/templates`; styles are served from `src/main/resources/static`. Search, filtering, and sorting are handled by the MVC controller, while borrowing and returning use standard form POSTs.
+Open the H2 console at: http://localhost:8080/h2-console
 
 ## Notes
 
-The catalog is seeded in memory and resets whenever the application restarts. This is a demo foundation, not a production library system: it does not yet include persistent storage, user accounts, authentication, due dates, or licensed full-text digital books. Replace preview text with content you have permission to distribute before deployment.
+The application uses an in-memory H2 database, so the catalog resets when the app restarts. This is a demo foundation and does not yet include authentication, user accounts, due dates, or an external digital library service.

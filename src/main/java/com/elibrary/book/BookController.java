@@ -23,28 +23,22 @@ public class BookController {
                           @RequestParam(defaultValue = "all") String filter,
                           @RequestParam(defaultValue = "title") String sort,
                           Model model) {
-        String normalizedFilter = List.of("all", "available", "digital").contains(filter) ? filter : "all";
-        String sortField = List.of("title", "author").contains(sort) ? sort : "title";
-        String query = q.trim().toLowerCase(Locale.ROOT);
+        String normalizedFilter = switch (filter) {
+            case "available" -> "available";
+            case "digital" -> "digital";
+            default -> "all";
+        };
+        String normalizedSort = switch (sort) {
+            case "author" -> "author";
+            default -> "title";
+        };
 
-        List<Book> books = bookService.findAll().stream()
-                .filter(book -> query.isEmpty()
-                        || book.title().toLowerCase(Locale.ROOT).contains(query)
-                        || book.author().toLowerCase(Locale.ROOT).contains(query)
-                        || book.category().toLowerCase(Locale.ROOT).contains(query)
-                        || book.description().toLowerCase(Locale.ROOT).contains(query))
-                .filter(book -> normalizedFilter.equals("all")
-                        || (normalizedFilter.equals("available") && book.available())
-                        || (normalizedFilter.equals("digital") && book.digital()))
-                .sorted((a, b) -> sortField.equals("author")
-                        ? a.author().compareToIgnoreCase(b.author())
-                        : a.title().compareToIgnoreCase(b.title()))
-                .toList();
+        List<Book> books = bookService.filterAndSort(q, normalizedFilter, normalizedSort);
 
         model.addAttribute("books", books);
         model.addAttribute("query", q);
         model.addAttribute("filter", normalizedFilter);
-        model.addAttribute("sort", sortField);
+        model.addAttribute("sort", normalizedSort);
         model.addAttribute("count", books.size());
         return "catalog";
     }
@@ -54,8 +48,8 @@ public class BookController {
         try {
             bookService.borrow(id);
             redirectAttributes.addFlashAttribute("notice", "Book borrowed — happy reading!");
-        } catch (BookUnavailableException | BookNotFoundException exception) {
-            redirectAttributes.addFlashAttribute("error", exception.getMessage());
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/";
     }
@@ -65,8 +59,8 @@ public class BookController {
         try {
             bookService.returnBook(id);
             redirectAttributes.addFlashAttribute("notice", "Book returned. Thanks for sharing!");
-        } catch (BookUnavailableException | BookNotFoundException exception) {
-            redirectAttributes.addFlashAttribute("error", exception.getMessage());
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/";
     }
