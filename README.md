@@ -1,11 +1,11 @@
 # Open Shelf eLibrary
 
-A small full-stack eLibrary application built with Spring Boot. It includes a responsive web catalog, book search and filters, borrow/return actions, and a simple digital preview reader.
+A Spring Boot eLibrary application using Spring MVC and Thymeleaf server-rendered views. Browse and search the catalog, borrow and return titles, and open digital previews.
 
 ## Requirements
 
 - Java 17 or newer
-- Maven 3.6+ (or use the included Maven wrapper if you add one)
+- Maven 3.6+
 
 ## Run locally
 
@@ -13,19 +13,18 @@ A small full-stack eLibrary application built with Spring Boot. It includes a re
 mvn spring-boot:run
 ```
 
-Open [http://localhost:8080](http://localhost:8080). The frontend is served by Spring Boot from `src/main/resources/static` and uses the REST API on the same origin.
+Open [http://localhost:8080](http://localhost:8080).
 
-## REST API
+## MVC routes
 
-| Method | Endpoint | Purpose |
+| Method | Route | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/books` | List catalog books and availability |
-| `GET` | `/api/books/{id}` | Get a book |
-| `POST` | `/api/books/{id}/borrow` | Borrow an available book |
-| `POST` | `/api/books/{id}/return` | Return a borrowed book |
-| `GET` | `/api/books/{id}/digital` | Read a digital preview |
+| `GET` | `/` | Browse, search, filter, and sort the catalog |
+| `POST` | `/books/{id}/borrow` | Borrow an available book, then redirect to the catalog |
+| `POST` | `/books/{id}/return` | Return a borrowed book, then redirect to the catalog |
+| `GET` | `/books/{id}/digital` | Read a digital preview |
 
-Borrowing an already-borrowed book, returning an available book, or requesting a digital copy for a print-only book returns HTTP `409 Conflict`. Unknown IDs return `404 Not Found`.
+Views are Thymeleaf templates under `src/main/resources/templates`; styles are served from `src/main/resources/static`. Search, filtering, and sorting are handled by the MVC controller, while borrowing and returning use standard form POSTs.
 
 ## Notes
 

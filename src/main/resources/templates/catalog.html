@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f4ee">
+  <title>Open Shelf — eLibrary</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" th:href="@{/}"><span class="brand-mark">O</span><span>open shelf</span></a>
+    <nav aria-label="Main navigation"><a class="active" th:href="@{/#catalog}">Discover</a><a th:href="@{/(filter='digital')}#catalog">Digital library</a></nav>
+    <a class="account" th:href="@{/#catalog}" aria-label="Your library account"><span>Guest reader</span><span class="avatar">G</span></a>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="hero-copy"><span class="eyebrow">YOUR NEIGHBORHOOD LIBRARY, ONLINE</span><h1>A good book<br>opens <em>everything.</em></h1><p>Find your next favorite, borrow a story, or settle into a digital read.</p>
+        <form class="search" th:action="@{/}" method="get"><span aria-hidden="true">⌕</span><input name="q" type="search" th:value="${query}" placeholder="Search titles, authors, or topics" aria-label="Search titles, authors, or topics"><input type="hidden" name="filter" th:value="${filter}"><input type="hidden" name="sort" th:value="${sort}"><button type="submit">Search</button></form>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="book-stack"><div class="book-cover cover-one"><small>THE</small><strong>SECRET<br>GARDEN</strong><i>F. H. BURNETT</i></div><div class="book-cover cover-two"><small>JANE AUSTEN</small><strong>PRIDE &<br>PREJUDICE</strong><i>A NOVEL</i></div><div class="plant">✳</div></div></div>
+    </section>
+    <section class="catalog" id="catalog">
+      <div class="section-heading"><div><span class="eyebrow">THE COLLECTION</span><h2>Find your next read</h2></div><span class="result-count" th:text="|${count} ${count == 1 ? 'book' : 'books'}|">5 books</span></div>
+      <div class="toolbar"><div class="filters" role="group" aria-label="Filter books">
+        <a class="filter" th:classappend="${filter == 'all' ? ' active' : ''}" th:href="@{/}(q=${query},filter='all',sort=${sort})">All books</a>
+        <a class="filter" th:classappend="${filter == 'available' ? ' active' : ''}" th:href="@{/}(q=${query},filter='available',sort=${sort})">Available</a>
+        <a class="filter" th:classappend="${filter == 'digital' ? ' active' : ''}" th:href="@{/}(q=${query},filter='digital',sort=${sort})">Digital</a>
+      </div><form class="sort-form" th:action="@{/}" method="get"><input type="hidden" name="q" th:value="${query}"><input type="hidden" name="filter" th:value="${filter}"><label class="sort-label">Sort by <select name="sort" onchange="this.form.submit()"><option value="title" th:selected="${sort == 'title'}">Title</option><option value="author" th:selected="${sort == 'author'}">Author</option></select></label></form></div>
+      <div th:if="${notice}" class="message" role="status" th:text="${notice}"></div><div th:if="${error}" class="message error-message" role="alert" th:text="${error}"></div>
+      <div class="book-grid" th:if="${!books.isEmpty()}">
+        <article class="book-card" th:each="book : ${books}">
+          <div class="book-visual" th:classappend="| palette-${(book.id - 1) % 5}|">
+            <span class="visual-category" th:text="${book.category}">Category</span><span class="visual-title" th:text="${book.title}">Book title</span><span class="visual-author" th:text="${book.author}">Author</span>
+            <span th:if="${book.digital}" class="digital-stamp">E-BOOK</span>
+          </div>
+          <div class="book-info"><div class="book-title-row"><div><h3 th:text="${book.title}">Title</h3><p class="author" th:text="${book.author}">Author</p></div><span class="availability" th:classappend="${book.available ? ' in-stock' : ' checked-out'}" th:title="${book.available ? 'Available' : 'Borrowed'}"></span></div>
+            <p class="description" th:text="${book.description}">Description</p>
+            <div class="book-actions"><form th:if="${book.available}" th:action="@{/books/{id}/borrow(id=${book.id})}" method="post"><button class="primary-button" type="submit">Borrow book</button></form><form th:unless="${book.available}" th:action="@{/books/{id}/return(id=${book.id})}" method="post"><button class="secondary-button" type="submit">Return book</button></form>
+              <a th:if="${book.digital}" class="read-button" th:href="@{/books/{id}/digital(id=${book.id})}">Read online <span>↗</span></a><span th:unless="${book.digital}" class="print-label">PRINT EDITION</span>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div th:if="${books.isEmpty()}" class="empty-state"><span>⌕</span><h3>No books found</h3><p>Try a different search or filter.</p></div>
+    </section>
+    <section class="quote"><span>“</span><p>A library is not a luxury but one of the necessities of life.</p><small>— HENRY WARD BEECHER</small></section>
+  </main>
+  <footer><a class="brand" th:href="@{/}"><span class="brand-mark">O</span><span>open shelf</span></a><span>Made for curious minds.</span><span>© 2025 Open Shelf Library</span></footer>
+</body>
+</html>
