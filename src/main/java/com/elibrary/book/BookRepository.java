@@ -1,6 +1,3 @@
 package com.elibrary.book;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface BookRepository extends JpaRepository<Book, Long> {
-}
+// Repository moved to com.elibrary.repository.BookRepository.

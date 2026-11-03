@@ -1,8 +1,3 @@
 package com.elibrary.book;
 
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface CategoryRepository extends JpaRepository<Category, Long> {
-    List<Category> findAllByOrderByNameAsc();
-}
+// Repository moved to com.elibrary.repository.CategoryRepository.
