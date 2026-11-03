@@ -1,31 +1,27 @@
 # Open Shelf eLibrary
 
-A Spring Boot eLibrary application built with Spring MVC, Thymeleaf, and JPA. The app includes a server-rendered catalog, search/filter/sort controls, borrow/return actions, and digital content previews.
+A Spring Boot eLibrary application using Spring MVC, Thymeleaf, and Spring Data JPA.
 
 ## Architecture
 
-- Controller: `BookController` in `com.elibrary.book`
-- Data model: `Book` entity mapped to the `books` table via JPA annotations
-- Service layer: `BookService`
-- Repository: `BookRepository` extending `JpaRepository`
-- Views: Thymeleaf templates in `src/main/resources/templates`
-- Database: H2 in-memory database configured in `application.properties`
+- MVC controller: `BookController`
+- JPA entities: `Book` (`books`), `Category` (`categories`), `User` (`library_users`), `BorrowRecord` (`borrow_records`)
+- Relationships: each book belongs to a category; each borrow record references a book and a user; users have borrow history
+- Service: `BookService` handles search/filter/sort and transactional borrow/return logic
+- Spring Data repositories: `BookRepository`, `CategoryRepository`, `UserRepository`, `BorrowRecordRepository`
+- Thymeleaf views: `catalog.html` and `reader.html` in `src/main/resources/templates`
+- Database: H2 in-memory database
 
-## Requirements
-
-- Java 17+
-- Maven 3.6+
+Borrowing creates a `BorrowRecord` for the seeded demo guest user, with a 14-day due date. Returning marks the active record returned and updates book availability. This demo currently uses a guest user rather than account login or per-user borrowing.
 
 ## Run locally
+
+Requires Java 17+ and Maven 3.6+.
 
 ```bash
 mvn spring-boot:run
 ```
 
-Open: http://localhost:8080
+Open http://localhost:8080. The optional H2 console is at http://localhost:8080/h2-console.
 
-Open the H2 console at: http://localhost:8080/h2-console
-
-## Notes
-
-The application uses an in-memory H2 database, so the catalog resets when the app restarts. This is a demo foundation and does not yet include authentication, user accounts, due dates, or an external digital library service.
+The in-memory database resets when the app restarts. This is a demo foundation and does not provide authentication, production-grade account management, or licensed full-text digital books.

@@ -1,7 +1,6 @@
 package com.elibrary.book;
 
 import java.util.List;
-import java.util.Locale;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,16 +22,8 @@ public class BookController {
                           @RequestParam(defaultValue = "all") String filter,
                           @RequestParam(defaultValue = "title") String sort,
                           Model model) {
-        String normalizedFilter = switch (filter) {
-            case "available" -> "available";
-            case "digital" -> "digital";
-            default -> "all";
-        };
-        String normalizedSort = switch (sort) {
-            case "author" -> "author";
-            default -> "title";
-        };
-
+        String normalizedFilter = List.of("all", "available", "digital").contains(filter) ? filter : "all";
+        String normalizedSort = List.of("title", "author").contains(sort) ? sort : "title";
         List<Book> books = bookService.filterAndSort(q, normalizedFilter, normalizedSort);
 
         model.addAttribute("books", books);
@@ -48,7 +39,7 @@ public class BookController {
         try {
             bookService.borrow(id);
             redirectAttributes.addFlashAttribute("notice", "Book borrowed — happy reading!");
-        } catch (RuntimeException ex) {
+        } catch (BookUnavailableException | BookNotFoundException ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/";
@@ -59,7 +50,7 @@ public class BookController {
         try {
             bookService.returnBook(id);
             redirectAttributes.addFlashAttribute("notice", "Book returned. Thanks for sharing!");
-        } catch (RuntimeException ex) {
+        } catch (BookUnavailableException | BookNotFoundException ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/";
